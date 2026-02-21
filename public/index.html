@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UDP Message Sender</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>UDP Message Sender</h1>
+            <p class="subtitle">Send UDP messages to control network devices</p>
+        </header>
+
+        <!-- Connection Settings -->
+        <section class="card">
+            <h2>Connection Settings</h2>
+            <div class="form-group">
+                <label for="ipAddress">Target IP Address:</label>
+                <input type="text" id="ipAddress" placeholder="192.168.1.100" value="192.168.1.100">
+                <span class="error-message" id="ipError"></span>
+            </div>
+            <div class="form-group">
+                <label for="port">Port:</label>
+                <input type="number" id="port" placeholder="9999" min="1" max="65535" value="9999">
+                <span class="error-message" id="portError"></span>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="card">
+            <h2>Quick Actions</h2>
+            <div class="button-group">
+                <button id="lightsOnBtn" class="btn btn-primary">
+                    <span class="btn-icon">💡</span>
+                    Lights ON
+                </button>
+                <button id="lightsOffBtn" class="btn btn-secondary">
+                    <span class="btn-icon">🌙</span>
+                    Lights OFF
+                </button>
+            </div>
+        </section>
+
+        <!-- Custom Message -->
+        <section class="card">
+            <h2>Custom Message</h2>
+            <div class="form-group">
+                <label for="customMessage">Message:</label>
+                <input type="text" id="customMessage" placeholder="Enter custom message">
+                <span class="error-message" id="messageError"></span>
+            </div>
+            <button id="sendCustomBtn" class="btn btn-success">Send Custom Message</button>
+        </section>
+
+        <!-- Status Display -->
+        <section class="card status-card">
+            <h2>Status</h2>
+            <div id="statusDisplay" class="status-display">
+                <p class="status-idle">Ready to send messages</p>
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
