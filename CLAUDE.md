@@ -14,6 +14,11 @@ UDPsender-js is a web-based application that sends UDP messages to control netwo
 
 The server will be available at `http://localhost:3000` (or PORT environment variable if set).
 
+## Environment Variables
+
+- `PORT` - Server port (default: 3000)
+  - Example: `PORT=8080 npm start`
+
 ## Architecture
 
 ### Backend Flow (server.js → src/udpClient.js)
@@ -46,6 +51,9 @@ The server will be available at `http://localhost:3000` (or PORT environment var
 - `src/validators.js` - Shared validation logic (IPv4, port, message size)
 - `public/app.js` - Frontend logic with localStorage persistence
 - `public/index.html` - UI with quick actions and custom message input
+- `public/styles.css` - Frontend styling and responsive design
+
+**Note:** This project has no test suite.
 
 ## Important Constraints
 
