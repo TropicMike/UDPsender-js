@@ -12,37 +12,73 @@ UDPsender-js is a web-based application that sends UDP messages to control netwo
 - `npm run dev` - Run development server with nodemon for auto-reload
 - `npm install` - Install dependencies
 
-The server will be available at `http://localhost:3000` (or `PORT` env var if set).
+The server will be available at `http://localhost:3000` (or PORT environment variable if set).
 
-**Note:** This project has no test suite and no linter configured.
+## Environment Variables
+
+- `PORT` - Server port (default: 3000)
+  - Example: `PORT=8080 npm start`
 
 ## Architecture
 
 ### Backend Flow (server.js → src/udpClient.js)
-1. Express server receives POST at `/api/send-udp` with `{ message, ip, port }`
-2. Rate limiter (60 req/min per IP) via `express-rate-limit` on all `/api/*` routes
-3. `validators.validateInput()` checks: message non-empty ≤1024 bytes UTF-8, valid IPv4, port 1-65535
-4. `udpClient.sendUDPMessage()` creates a new `dgram` UDP4 socket per message with 5-second timeout
+1. Express server receives POST request at `/api/send-udp` with `{ message, ip, port }`
+2. Request passes through rate limiter (60 req/min per IP)
+3. Input validation via `validators.validateInput()` checks:
+   - Message: non-empty, ≤1024 bytes
+   - IP: valid IPv4 format
+   - Port: 1-65535 range
+4. `udpClient.sendUDPMessage()` creates dgram socket, sends message with 5-second timeout
 5. Response returns `{ success, message, details: { bytesSent } }`
 
-UDP is connectionless — "success" only confirms the packet reached the OS network stack, not that the target received it.
-
 ### Frontend (public/app.js)
-- Client-side validation mirrors backend validation before calling the API
-- Settings (IP/port) persist to `localStorage` under keys `udp_ip` / `udp_port`
-- Quick action buttons send predefined string messages (`lights_on`, `lights_off`)
+- Client-side validation mirrors backend validation
+- Settings (IP/port) persist to localStorage
+- Fetch API calls `/api/send-udp` endpoint
+- Quick action buttons send predefined messages (`lights_on`, `lights_off`)
 
-### Security Middleware (server.js)
-- `helmet` for secure HTTP headers
-- `cors` enabled globally
-- `express-rate-limit` on `/api/*`
+### Security Layers
+- **helmet**: Secure HTTP headers
+- **cors**: CORS enabled for cross-origin requests
+- **express-rate-limit**: 60 requests per minute per IP on `/api/*` routes
+- **Double validation**: Both frontend and backend validate all inputs
+- **Timeout protection**: UDP send operations timeout after 5 seconds
 
-## Validation — Keep Frontend and Backend in Sync
+## Key Files
 
-Validation logic is duplicated in `src/validators.js` (backend) and `public/app.js` (frontend). Both must be updated together when rules change.
+- `server.js` - Express server with security middleware and API endpoint
+- `src/udpClient.js` - UDP socket wrapper using Node's dgram, Promise-based with timeout
+- `src/validators.js` - Shared validation logic (IPv4, port, message size)
+- `public/app.js` - Frontend logic with localStorage persistence
+- `public/index.html` - UI with quick actions and custom message input
+- `public/styles.css` - Frontend styling and responsive design
 
-**Known discrepancy:** The frontend checks `message.length <= 1024` (character count), while the backend checks `Buffer.byteLength(message, 'utf8') <= 1024` (byte count). For multi-byte UTF-8 characters, a message can pass frontend validation but be rejected by the backend.
+**Note:** This project has no test suite.
+
+## Important Constraints
+
+- **Message size limit**: 1024 bytes (enforced in validators.js)
+- **UDP timeout**: 5 seconds per send operation
+- **Port range**: 1-65535 only
+- **IP format**: IPv4 only (no IPv6 support)
+- **Rate limit**: 60 requests/minute per IP address
+
+## Validation Logic
+
+Validation exists in both `src/validators.js` (backend) and `public/app.js` (frontend) and must remain synchronized:
 
 - **IPv4 regex**: `/^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/`
-- **Port**: integer 1–65535
-- **Message**: non-empty, ≤1024 bytes (UTF-8) — IPv6 not supported
+- **Port**: Integer between 1-65535
+- **Message**: Non-empty string, max 1024 bytes in UTF-8
+
+When modifying validation rules, update both locations.
+
+## UDP Socket Behavior
+
+The `sendUDPMessage()` function in `src/udpClient.js`:
+- Creates a new UDP4 socket for each message (fire-and-forget pattern)
+- Sets a 5-second timeout to prevent hanging
+- Closes socket after send completes or errors
+- Returns Promise resolving to bytes sent on success
+
+UDP is connectionless, so "success" only means the packet was sent to the network stack, not that it was received by the target device.

@@ -71,12 +71,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server (only when run directly, not when required by tests)
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`UDP Sender server running on http://localhost:${PORT}`);
-    console.log(`Open your browser and navigate to http://localhost:${PORT}`);
-  });
-}
-
-module.exports = app;
+// Start server
+app.listen(PORT, () => {
+  console.log(`UDP Sender server running on http://localhost:${PORT}`);
+  console.log(`Open your browser and navigate to http://localhost:${PORT}`);
+});
