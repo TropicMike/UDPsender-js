@@ -1,6 +1,11 @@
 # Dependencies
 node_modules/
 
+# Build output
+dist/
+public/app.js
+*.tsbuildinfo
+
 # Environment variables
 .env
 .env.local
