@@ -72,8 +72,17 @@ const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
 };
 app.use(errorHandler);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`UDP Sender server running on http://localhost:${PORT}`);
-  console.log(`Open your browser and navigate to http://localhost:${PORT}`);
+// Start server — PORT=0 lets the OS pick a free port (used by Electron)
+export let actualPort: number = typeof PORT === 'string' ? parseInt(PORT, 10) : Number(PORT);
+
+export const serverReady: Promise<void> = new Promise((resolve, reject) => {
+  const server = app.listen(PORT, () => {
+    const addr = server.address();
+    if (addr && typeof addr === 'object') {
+      actualPort = addr.port;
+    }
+    console.log(`UDP Sender server running on http://localhost:${actualPort}`);
+    resolve();
+  });
+  server.on('error', reject);
 });
