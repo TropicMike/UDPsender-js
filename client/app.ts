@@ -75,7 +75,7 @@ function validateInputs(message: string | null): boolean {
     const port = portInput.value.trim();
 
     if (!validateIP(ip)) {
-        ipError.textContent = 'Invalid IP address format (e.g., 192.168.1.100)';
+        ipError.textContent = 'Invalid IP address format (e.g., 127.0.0.1)';
         ipInput.classList.add('error');
         isValid = false;
     }
