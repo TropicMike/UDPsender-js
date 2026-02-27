@@ -1,21 +1,22 @@
 # UDPsender-js
 
-A lightweight web-based application for sending UDP messages to control network devices. Built with Express.js backend and vanilla JavaScript frontend.
+A lightweight web-based application for sending UDP messages to control network devices. Built with an Express.js backend and vanilla TypeScript frontend.
 
 ## Features
 
-- 🚀 Simple web interface for sending UDP messages
-- ⚡ Quick action buttons for predefined commands
-- 💾 Persistent settings (IP and port stored in localStorage)
-- 🔒 Built-in security with rate limiting and input validation
-- 🎯 Real-time feedback on message delivery
-- 📱 Responsive design for desktop and mobile
+- Simple web interface for sending UDP messages
+- Quick action buttons for predefined commands (`lights_on`, `lights_off`)
+- Persistent settings (IP and port stored in localStorage)
+- Built-in security with rate limiting and input validation
+- Real-time feedback on message delivery
+- Responsive design for desktop and mobile
+- Optional Electron desktop app wrapper
 
 ## Installation
 
 ### Prerequisites
 
-- Node.js (v12 or higher)
+- Node.js (v16 or higher)
 - npm (comes with Node.js)
 
 ### Setup
@@ -31,7 +32,12 @@ cd UDPsender-js
 npm install
 ```
 
-3. Start the server:
+3. Build the project:
+```bash
+npm run build
+```
+
+4. Start the server:
 ```bash
 npm start
 ```
@@ -59,6 +65,60 @@ The application includes two predefined quick action buttons:
 ### Custom Messages
 
 Enter any text message (up to 1024 bytes) in the custom message field and click "Send Custom Message" to transmit it via UDP.
+
+## Development
+
+### Development Mode
+
+Run the backend with auto-reload on file changes:
+```bash
+npm run dev
+```
+
+Watch and recompile the frontend TypeScript:
+```bash
+npm run dev:client
+```
+
+### Build Commands
+
+| Command | Description |
+|---|---|
+| `npm run build` | Compile both backend and frontend TypeScript |
+| `npm run build:server` | Compile backend only (`src/` → `dist/`) |
+| `npm run build:client` | Compile frontend only (`client/` → `public/app.js`) |
+| `npm run typecheck` | Type-check both projects without emitting files |
+
+### Project Structure
+
+```
+UDPsender-js/
+├── src/
+│   ├── server.ts          # Express server with security middleware and API endpoint
+│   ├── udpClient.ts       # UDP socket wrapper (Promise-based, with timeout)
+│   ├── validators.ts      # Input validation logic (IPv4, port, message size)
+│   └── types.ts           # Shared TypeScript interfaces
+├── client/
+│   └── app.ts             # Frontend TypeScript source
+├── electron/
+│   └── main.ts            # Electron desktop app entry point
+├── public/
+│   ├── index.html         # Frontend UI
+│   ├── app.js             # Generated frontend script (do not edit directly)
+│   └── styles.css         # Styling
+├── scripts/
+│   └── udp-listen.ps1     # PowerShell UDP listener for testing
+├── dist/                  # Generated backend output (do not edit directly)
+└── package.json
+```
+
+## Electron Desktop App
+
+The application can run as a standalone desktop app using Electron. The Electron main process starts the embedded Express server on a free OS-assigned port and opens it in a `BrowserWindow`.
+
+```bash
+npm run electron
+```
 
 ## API Documentation
 
@@ -115,96 +175,35 @@ Example:
 PORT=8080 npm start
 ```
 
-### Validation Constraints
-
-These limits are enforced in `src/validators.js`:
-
-- Maximum message size: 1024 bytes
-- UDP send timeout: 5 seconds
-- Port range: 1-65535
-- IP format: IPv4 only
-
 ## Security Features
-
-The application implements multiple security layers:
 
 - **Helmet.js**: Secure HTTP headers
 - **CORS**: Cross-Origin Resource Sharing enabled
 - **Rate Limiting**: 60 requests per minute per IP on `/api/*` routes
 - **Double Validation**: Both frontend and backend validate all inputs
 - **Timeout Protection**: UDP operations timeout after 5 seconds
-- **Input Sanitization**: All user inputs are validated and sanitized
-
-## Development
-
-### Development Mode
-
-Run the server with auto-reload on file changes:
-```bash
-npm run dev
-```
-
-### Project Structure
-
-```
-UDPsender-js/
-├── server.js              # Express server with security middleware
-├── src/
-│   ├── udpClient.js      # UDP socket wrapper with Promise-based API
-│   └── validators.js     # Shared validation logic
-├── public/
-│   ├── index.html        # Frontend UI
-│   ├── app.js           # Frontend JavaScript logic
-│   └── styles.css       # Styling
-└── package.json          # Project dependencies
-```
-
-### Key Files
-
-- **server.js**: Express server setup with API endpoint and security middleware
-- **src/udpClient.js**: UDP socket implementation using Node's dgram module
-- **src/validators.js**: Input validation shared between frontend and backend
-- **public/app.js**: Frontend logic with localStorage persistence
-- **public/index.html**: User interface with quick actions and custom message input
-
-### Architecture
-
-**Backend Flow:**
-1. Express receives POST request at `/api/send-udp`
-2. Rate limiter checks request frequency
-3. Input validation ensures data integrity
-4. UDP client sends message with 5-second timeout
-5. Response returned with success status and bytes sent
-
-**Frontend:**
-- Client-side validation mirrors backend rules
-- Settings persist to localStorage
-- Fetch API communicates with backend
-- Real-time status updates
 
 ## UDP Behavior
 
 UDP (User Datagram Protocol) is a connectionless protocol:
 - Messages are "fire-and-forget" with no delivery guarantee
-- Success response only indicates the packet was sent to the network stack
-- No confirmation that the target device received the message
+- A success response only means the packet was sent to the network stack, not that the target received it
 - A new socket is created for each message transmission
 
-## Contributing
+## Testing with the UDP Listener
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+A PowerShell script is included to listen for incoming UDP messages on port 9999, useful for local testing:
 
-## License
+```powershell
+.\scripts\udp-listen.ps1
+```
 
-[MIT License](LICENSE)
+The script prints the sender address and message content for each packet received.
 
 ## Troubleshooting
 
-### Common Issues
-
 **Port already in use:**
 ```bash
-# Use a different port
 PORT=3001 npm start
 ```
 
@@ -217,8 +216,7 @@ PORT=3001 npm start
 **Rate limit errors:**
 - The API limits requests to 60 per minute per IP
 - Wait a minute and try again
-- Consider implementing queuing for high-frequency scenarios
 
-## Support
+## License
 
-For issues and questions, please open an issue on the GitHub repository.
+[MIT License](LICENSE)
