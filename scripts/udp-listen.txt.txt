@@ -1,0 +1,2 @@
+ powershell -ExecutionPolicy Bypass -File scripts\udp-listen.ps1
+ 
