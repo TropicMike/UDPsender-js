@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, Menu, shell } from 'electron';
 import path from 'path';
 
 interface ServerModule {
@@ -49,6 +49,8 @@ function createWindow(port: number): void {
     mainWindow = null;
   });
 }
+
+Menu.setApplicationMenu(null);
 
 app.whenReady().then(async () => {
   try {
