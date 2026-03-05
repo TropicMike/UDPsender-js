@@ -245,6 +245,14 @@ input.error {
     }
 }
 
+/* Version Footer */
+.version-footer {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    padding: 10px 0 5px;
+}
+
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
     * {
