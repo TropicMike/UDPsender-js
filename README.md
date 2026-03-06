@@ -1,6 +1,6 @@
 # UDPsender-js
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue)
+![Version](https://img.shields.io/badge/version-1.1.1-blue)
 
 A lightweight web-based application for sending UDP messages to control network devices. Built with an Express.js backend and vanilla TypeScript frontend.
 
