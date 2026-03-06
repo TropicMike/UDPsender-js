@@ -1,5 +1,7 @@
 # UDPsender-js
 
+![Version](https://img.shields.io/badge/version-1.1.0-blue)
+
 A lightweight web-based application for sending UDP messages to control network devices. Built with an Express.js backend and vanilla TypeScript frontend.
 
 ## Features
@@ -84,10 +86,11 @@ npm run dev:client
 
 | Command | Description |
 |---|---|
-| `npm run build` | Compile both backend and frontend TypeScript |
+| `npm run build` | Compile backend, frontend, and Electron TypeScript |
 | `npm run build:server` | Compile backend only (`src/` → `dist/`) |
 | `npm run build:client` | Compile frontend only (`client/` → `public/app.js`) |
-| `npm run typecheck` | Type-check both projects without emitting files |
+| `npm run build:electron` | Compile Electron main process only (`electron/` → `dist/electron/`) |
+| `npm run typecheck` | Type-check all projects without emitting files |
 
 ### Project Structure
 
